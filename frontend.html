@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Lift</title>
+</head>
+<body>
+<link rel="stylesheet" href="pure-release-0.6.0/pure-min.css">
+<link rel="stylesheet" href="font-awesome.min.css">
+<link rel="stylesheet" href="lift_styles.css">
+<script src="knockout-3.3.0.debug.js"></script>
+
+<div class="pure-g">
+    <div class="pure-menu pure-menu-horizontal pure-menu-scrollable">
+        <a href="#" class="pure-menu-heading pure-menu-link pure-u-1-3">LIFT</a>
+        <p class="pure-u-1-3">SOME PLACEHOlder TEXT</p>
+        <ul class="pure-menu-list pure-u-1-3 hang-right">
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">New Workout</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Your History</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Settings</a></li>
+        </ul>
+    </div>
+</div>
+
+<table class="pure-table pure-table-horizontal">
+    <thead>
+    <tr>
+        <th>Lift</th>
+        <th>Weight</th>
+        <th>Reps</th>
+        <th>Set Completed</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody data-bind="foreach: workout">
+    <tr>
+        <td><input data-bind="value: lift" /></td>
+        <td><input data-bind="value: weight" /></td>
+        <td><input data-bind="value: reps" /></td>
+        <td><input data-bind="checked: didCompleteSet" type="checkbox"></td>
+        <td><a href="#" data-bind="click: $parent.removeLift"><i class="fa fa-times"></i></a></td>
+    </tr>
+    </tbody>
+</table>
+
+<form data-bind="submit: addNewLift" class="pure-form">
+    <fieldset>
+        <legend>New Lift</legend>
+        <input data-bind="value: newLiftName" placeholder="Lift Name" />
+        <input data-bind="value: newLiftWeight" placeholder="Weight" />
+        <input data-bind="value: newLiftReps" placeholder="Reps" />
+        <input data-bind="checked: newLiftSetCompleted" type="checkbox" />
+        <button data-bind="sumbit" class="pure-button pure-button-primary">Add</button>
+    </fieldset>
+</form>
+
+
+<script>
+    // Class to represent a row in the lifts grid
+    function Lift(lift, weight, reps, didCompleteSet) {
+        this.lift = ko.observable(lift);
+        this.weight = ko.observable(weight);
+        this.reps = ko.observable(reps);
+        this.didCompleteSet = ko.observable(didCompleteSet);
+    }
+
+    function LiftAppModel() {
+        // Data
+        var self = this;
+
+        self.liftOptions = ko.observableArray([ 'Bench', 'Deadlift', 'Squat' ]);
+        self.newLiftName = ko.observable();
+        self.newLiftWeight = ko.observable();
+        self.newLiftReps = ko.observable();
+        self.newLiftSetCompleted = ko.observable();
+
+        // Editable data
+        self.workout = ko.observableArray([
+            new Lift('Bench', 150, 8, true),
+            new Lift('Squat', 225, 5, false)
+        ]);
+
+        // Behaviours
+        self.addNewLift = function () {
+            // todo: check to see if empty
+            self.workout.push(new Lift(
+                            this.newLiftName(), this.newLiftWeight(), this.newLiftReps(), this.newLiftSetCompleted())
+            );
+            self.newLiftName("");
+            self.newLiftWeight("");
+            self.newLiftReps("");
+        }
+
+        self.removeLift = function (lift) { self.workout.destroy(lift) }
+
+    }
+
+    ko.applyBindings(new LiftAppModel());
+</script>
+</body>
+</html>
